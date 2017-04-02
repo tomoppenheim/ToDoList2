@@ -3,6 +3,7 @@ package com.example.tom.todolist2;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,15 +11,21 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity{
     ArrayList<String> arrayList;
+    private String line;
     ArrayAdapter<String> arrayAdapter;
     private EditText dataEntry;
     String[] items = {};
+    private final String file = "list.txt";
+    private OutputStreamWriter out;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,9 @@ public class MainActivity extends AppCompatActivity{
                 dataEntry.setText(text);
             }
         });
+        try {
+            out = new OutputStreamWriter(openFileOutput(file, MODE_PRIVATE)); // also try MODE_APPEND
+        } catch (IOException e) {}
     }
 
 
@@ -58,6 +68,15 @@ public class MainActivity extends AppCompatActivity{
 
         switch (id){
             case R.id.SaveList:
+               try {
+                   for (int i = 0; i < arrayAdapter.getCount(); i++){
+                       line = arrayList.get(i);
+                       out.write(line + " \n");
+                   }
+               }
+               catch (IOException e) {
+                   Log.e("IOTest", e.getMessage());
+               }
                 return true;
 
             case R.id.CloseApp:
